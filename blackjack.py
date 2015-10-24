@@ -97,7 +97,8 @@ class Deck(object):
 		self-instance of a Deck object
 
 		Output:
-		The last Card object in the Deck"""
+		The last Card object in the Deck
+		"""
 		return self.cards.pop()
 		
 
@@ -109,7 +110,8 @@ class Deck(object):
 		self-Instance of a Deck object
 
 		Output:
-		An integer corresponding to the length of the self.cards list attribute"""
+		An integer corresponding to the length of the self.cards list attribute
+		"""
 		return len(self.cards)
 
 	def Deck_test(self):
