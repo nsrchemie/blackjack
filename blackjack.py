@@ -121,6 +121,13 @@ class Deck(object):
 		An integer corresponding to the length of the self.cards list attribute
 		"""
 		return len(self.cards)
+		
+	def bubbleSort(self):
+			for i in range(len(self.cards)):
+				if self.cards(Card(suit,rank)[i])>self.cards(Card(suit,rank)[i+1]):
+					temp = self.cards(Card(suit, rank)[i])
+					self.cards(Card(suit, rank))[i+1] = self.cards(Card(suit, rank))[i]
+					self.cards(Card(suit, rank))[i+1] = temp
 
 	def Deck_test(self):
 		assert type(self.cards) == list
@@ -141,10 +148,10 @@ class Hand(object):
 	self.won-Boolean attribute to simply clarify if a player has won or lost
 
 	"""
-	def __init__(self):
+	def __init__(self, name):
 		self.pair = []
-		self.won = None
-		self.score = 0
+		self.name = name
+		self.hand_total = []
 
 	def hand_draw(self, deck):
 		"""A function that refers to a preinitialized instance of a Deck object and extracts one card that has been dealt from the Deck object using a Deck function
@@ -159,6 +166,7 @@ class Hand(object):
 		self.pair-An update list attribute containing a card pulled via a Deck method
 		"""
 		self.pair.append(deck.draw_card())
+
 
 	def __str__(self):
 		"""Class method formatting the ability to print the cards found in the Hand object
@@ -175,29 +183,91 @@ class Hand(object):
 		return str(pairlst)
 
 	def hand_score(self):
-		hand_total = []
-		for card in self.pair:
-			hand_total.append(Card.scoring(card))
-		for val in hand_total:
-			if val == 1 and sum(hand_total) <= 21:
-				val = 10
-		return 'Your hand contains {0} and your current total is {1}'.format(str(self), sum(hand_total))
-
+		self.hand_total = []
+		if self.name == 'Player':
+			for card in self.pair:
+				self.hand_total.append(Card.scoring(card))
+			for val in self.hand_total:
+				if val == 1 and sum(self.hand_total) <= 21:
+					val = 10
+			if sum(self.hand_total) > 21:
+				return 'You overdrew, Dealer wins!'
+			else:
+				print('Your hand contains {0} and your current total is {1}'.format(str(self), sum(self.hand_total)))
+		if self.name == 'Dealer': 
+		
+			for card in self.pair:
+				self.hand_total.append(Card.scoring(card))
+			for val in self.hand_total:
+				if val == 1 and sum(self.hand_total) <= 21:
+					val = 10
+			if sum(self.hand_total) > 21:
+				return 'Dealer overdrew, you win!'
+			
 
 	
 
 class Blackjack:
 	"""A class object that when initialized creates a Deck object composed of 52 Card object instances, two Player/Hand object instances (Player and Dealer) """
 	def __init__(self):
+		pass
+	def game(self):
 		self.deck = Deck()
 		self.deck.shuffle()
-		self.player = Hand()
-		self.dealer = Hand() #TODO - Are these the same objects?
+		self.player = Hand('Player')
+		self.dealer = Hand('Dealer') 
 		self.player.hand_draw(self.deck)
 		self.player.hand_draw(self.deck)
 		self.dealer.hand_draw(self.deck)
 		self.dealer.hand_draw(self.deck)
+		self.player.hand_score()
+		self.dealer.hand_score()
+		prompt = input('Your score is currently ' + str(sum(self.player.hand_total)) + '\n' + 'Would you like to Hit or Stay? ')
+		if prompt == 'Hit':
+			self.player.hand_draw(self.deck)
+			self.player.hand_score()
+			prompt = input('Your score is currently ' + str(sum(self.player.hand_total)) + '\n' + 'Would you like to Hit or Stay? ')
+			if random.randint(0,1) == 1:
+				self.dealer.hand_draw(self.deck)
+				self.dealer.hand_score()
+		if sum(self.player.hand_total) > 21:
+			return 'Dealer wins, you overdrew!'
+		elif sum(self.dealer.hand_total) > 21:
+			return 'You Win!, Dealer overdrew!'
+		if prompt == 'Hit':
+			self.player.hand_draw(self.deck)
+			self.player.hand_score()
+			prompt = input('Your score is currently ' + str(sum(self.player.hand_total)) + '\n' + 'Would you like to Hit or Stay? ')
+			if random.randint(0,1) == 1:
+				self.dealer.hand_draw(self.deck)
+				self.dealer.hand_score()
+		if sum(self.player.hand_total) > 21:
+			return 'Dealer wins, you overdrew!'
+		elif sum(self.dealer.hand_total) > 21:
+				return 'You Win!, Dealer overdrew!'
+		else:
+			if sum(self.player.hand_total) > 21:
+				return 'Dealer wins, you overdrew!'
+			elif sum(self.dealer.hand_total) > 21:
+				return 'You Win!, Dealer overdrew!'
+			else:
+				if sum(self.player.hand_total) > sum(self.dealer.hand_total):
+					return 'You Win!'
+				elif sum(self.player.hand_total) < sum(self.dealer.hand_total):
+					return 'Dealer Wins!'
+				elif sum(self.dealer.hand_total) == sum(self.player.hand_total):
+					return 'Its a draw!'
 
+		
+#blackjack = Blackjack()
+			
+			
+#blackjack = Blackjack()
+
+#		if sum(self.dealer.hand_total) <=21:
+#			chance = random.randint(0,1)
+#			if chance == 1:
+#				self.dealer.hand_draw(self.deck)
 		# assert self.dealer is not self.player
 		# assert self.dealer.pair is not self.player.pair
 		# assert len(self.dealer.pair) == len(self.player.pair) == 2
